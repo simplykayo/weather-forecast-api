@@ -1,6 +1,6 @@
 (() => {
 const $ = id => document.getElementById(id);
-const DEFAULT = { name: 'Lucknow', region: 'Uttar Pradesh', lat: 26.8467, lon: 80.9462 };
+const DEFAULT = { name: 'Dubai', region: 'United Arab Emirates', lat: 25.2048, lon: 55.2708 };
 const WAQI_TOKEN = '06749c1561d5f4e092b3737a048ff656d569d234';
 
 /* ---------- weather codes ---------- */
