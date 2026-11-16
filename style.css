@@ -6,17 +6,26 @@ main{max-width:860px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:30px}
 h2{font-size:13px;font-weight:500;color:var(--dim);margin-bottom:10px}
 :focus-visible{outline:2px solid #9aa3b5;outline-offset:2px}
 
-.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:relative;z-index:20}
 #search{display:flex;gap:8px;flex:1;min-width:240px}
-#q{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--text);font:inherit;padding:10px 14px}
+.search-box{position:relative;flex:1}
+#q{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--text);font:inherit;padding:10px 14px}
 #q::placeholder{color:var(--dim)}
 button{background:#1c1c20;border:1px solid var(--line);border-radius:12px;color:var(--text);font:inherit;padding:10px 16px;cursor:pointer}
 button:hover{background:#25252a}
 #status{color:var(--dim);font-size:13px}
 
+.suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#161619;border:1px solid var(--line);border-radius:12px;list-style:none;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.55);max-height:280px;overflow-y:auto}
+.suggestions[hidden]{display:none}
+.suggestions li{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.suggestions li:last-child{border-bottom:0}
+.suggestions li:hover,.suggestions li.active{background:#222228}
+.suggestions strong{font-weight:500;font-size:14px;color:var(--text)}
+.suggestions span{font-size:12px;color:var(--dim)}
+
 .hero{position:relative;height:340px;border-radius:22px;overflow:hidden;background:#0f0f11;border:1px solid var(--line)}
 .hero canvas{position:absolute;inset:0;width:100%;height:100%}
-.hero-text{position:relative;padding:26px 28px;max-width:60%}
+.hero-text{position:relative;padding:26px 28px;max-width:60%;pointer-events:none}
 .place{font-size:17px;font-weight:500}
 .temp{font-size:clamp(72px,17vw,124px);font-weight:300;letter-spacing:-.05em;line-height:1.05;margin-top:8px}
 .cond{font-size:20px;font-weight:500}
@@ -57,8 +66,6 @@ footer{color:var(--dim);font-size:12px}
 @media(max-width:560px){
   .hero{height:320px}
   .hero-text{max-width:100%;padding:22px}
-  .days li{grid-template-columns:48px 1fr 36px 90px 36px}
-  .days .c{display:none}
   .days li{grid-template-columns:48px 36px 1fr 36px}
-  .days .p{display:none}
+  .days .c,.days .p{display:none}
 }
