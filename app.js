@@ -215,6 +215,9 @@ $('search').addEventListener('submit', async e => {
 
 /* ---------- start ---------- */
 let start = DEFAULT;
-try { start = JSON.parse(localStorage.getItem('place')) || DEFAULT; } catch (e) { /* use default */ }
+try {
+  const saved = JSON.parse(localStorage.getItem('place'));
+  if (saved && saved.name !== 'Lucknow') start = saved;
+} catch (e) { /* use default */ }
 resize(); play(); load(start);
 })();
