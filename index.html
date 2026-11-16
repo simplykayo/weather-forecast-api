@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Weather and air quality</title>
-<meta name="description" content="Live weather, forecast and air quality for Lucknow and any city you search.">
+<meta name="description" content="Live weather, forecast and air quality for Lucknow and any area you search.">
 <meta name="theme-color" content="#0b0b0c">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,10 @@
 <main>
   <header class="top">
     <form id="search">
-      <input id="q" type="search" placeholder="Search a city" aria-label="Search a city" autocomplete="off">
+      <div class="search-box">
+        <input id="q" type="search" placeholder="Search a city, locality or area" aria-label="Search a city, locality or area" autocomplete="off">
+        <ul id="suggestions" class="suggestions" hidden></ul>
+      </div>
       <button type="submit">Search</button>
     </form>
     <p id="status" role="status"></p>
