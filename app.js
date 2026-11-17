@@ -520,7 +520,7 @@ function renderWeather(weather) {
   const vis = w.hourly.visibility[i0];
   const tiles = [
     ['Humidity', c.relative_humidity_2m + '%', ''],
-    ['Wind', windValue(c.wind_speed_10m).toFixed(1).replace(/\\.0$/, '') + ' ' + units.wind, compass(c.wind_direction_10m)],
+    ['Wind', Number(windValue(c.wind_speed_10m).toFixed(1)) + ' ' + units.wind, compass(c.wind_direction_10m)],
     ['Pressure', pressureText(c.surface_pressure), ''],
     ['UV index', Math.round(day.uv_index_max[0]), 'today’s peak'],
     ['Visibility', vis == null ? '–' : (vis / 1000).toFixed(1) + ' km', '']
