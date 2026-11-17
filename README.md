@@ -10,6 +10,7 @@ The header scene updates dynamically based on current conditions—rain falls fr
 - **Air Quality (AQI):** US AQI index along with specific pollutant levels.
 - **Dynamic Header Animations:** Visual weather effects that match the active forecast.
 - **City Search:** Defaults to Naka Hindola, Lucknow, with instant search for any global location.
+- **Device Location:** Select “Select my location” to request browser permission and load weather for your current coordinates.
 - **Zero Dependencies:** Written in vanilla HTML, CSS, and JS with no build tools or frameworks required.
 
 ## Air Quality Setup (Optional)
