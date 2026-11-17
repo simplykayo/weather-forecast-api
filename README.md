@@ -9,7 +9,7 @@ The header scene updates dynamically based on current conditions—rain falls fr
 - **Live Weather & Forecasts:** Real-time temperature, conditions, hourly breakdown, and a 7-day outlook.
 - **Air Quality (AQI):** US AQI index along with specific pollutant levels.
 - **Dynamic Header Animations:** Visual weather effects that match the active forecast.
-- **City Search:** Defaults to Naka Hindola, Lucknow, with instant search for any global location.
+- **City Search:** Search for any global location; the app starts without a preset city.
 - **Device Location:** Select “Select my location” to request browser permission and load weather for your current coordinates.
 - **Zero Dependencies:** Written in vanilla HTML, CSS, and JS with no build tools or frameworks required.
 
