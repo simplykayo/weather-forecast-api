@@ -447,7 +447,6 @@ async function load(p) {
     showWeather(p, w);
     showAir(a);
     status('');
-    try { localStorage.setItem('place', JSON.stringify(p)); } catch (e) { /* storage unavailable */ }
   } catch (e) {
     status('Could not load data. Check your connection and try again.');
   }
