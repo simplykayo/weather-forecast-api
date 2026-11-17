@@ -1,7 +1,6 @@
 (() => {
 const $ = id => document.getElementById(id);
 const locationBtn = $('locationBtn');
-const DEFAULT = { name: 'Naka Hindola, Lucknow', region: 'Uttar Pradesh, India', lat: 26.8467, lon: 80.9462 };
 const WAQI_TOKEN = '06749c1561d5f4e092b3737a048ff656d569d234';
 
 /* ---------- weather codes ---------- */
@@ -684,7 +683,12 @@ $('search').addEventListener('submit', async e => {
 });
 
 /* ---------- start ---------- */
-let start = DEFAULT;
-try { start = JSON.parse(localStorage.getItem('place')) || DEFAULT; } catch (e) { /* use default */ }
-resize(); play(); load(start);
+// Start with no preset city. The visitor chooses a place or shares their location.
+try { localStorage.removeItem('place'); } catch (e) { /* storage unavailable */ }
+$('place').textContent = 'No location selected';
+$('temp').textContent = '—°';
+$('cond').textContent = 'Search for a place or select your location';
+$('sub').textContent = '';
+status('Choose a location to see its weather.');
+resize(); play();
 })();
