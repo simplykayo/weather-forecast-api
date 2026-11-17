@@ -10,12 +10,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="astronomy.css">
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js" defer></script>
 </head>
 <body>
 <main class="astro-main">
   <header class="astro-header">
     <a class="back-link" href="index.html">← Weather dashboard</a>
-    <span class="eyebrow">THE NIGHT SKY, EXPLAINED</span>
+    <nav class="page-nav" aria-label="Main navigation">
+      <a href="index.html">Weather</a>
+      <a href="radar.html">Radar</a>
+      <a href="astronomy.html" aria-current="page">Astronomy</a>
+    </nav>
+    <button class="theme-toggle" type="button" data-theme-toggle>☀ Light</button>
   </header>
 
   <section class="intro">
