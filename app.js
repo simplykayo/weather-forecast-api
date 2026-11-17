@@ -29,6 +29,53 @@ let W = 0, H = 0, U = 1, cfg = describe(3), night = false;
 let drops = [], splashes = [], stars = [];
 let t = 0, flash = 0, bolt = null, raf = 0, last = 0;
 let liveTemp = 26, liveWind = 8, liveAqi = 50;
+let latestWeather = null;
+const units = { temp: 'C', wind: 'kmh', pressure: 'hPa' };
+const tempValue = value => units.temp === 'F' ? value * 9 / 5 + 32 : value;
+const tempText = value => Math.round(tempValue(value)) + '°';
+const windValue = value => units.wind === 'mph' ? value / 1.609344 : value;
+const pressureValue = value => units.pressure === 'inHg' ? value * 0.029529983 : value;
+const pressureText = value => pressureValue(value).toFixed(units.pressure === 'inHg' ? 2 : 0) + ' ' + units.pressure;
+function daylightText(seconds) {
+  const total = Math.round(seconds || 0);
+  return Math.floor(total / 3600) + 'h ' + Math.floor((total % 3600) / 60) + 'm';
+}
+function moonInfo(dateString) {
+  // Approximate lunar phase from the known 2000-01-06 new moon.
+  const date = new Date(dateString + 'T12:00:00Z');
+  const epoch = Date.UTC(2000, 0, 6, 18, 14);
+  const synodicMonth = 29.530588853;
+  const age = ((date.getTime() - epoch) / 86400000 % synodicMonth + synodicMonth) % synodicMonth;
+  const phase = age / synodicMonth;
+  const illumination = Math.round((1 - Math.cos(phase * Math.PI * 2)) * 50);
+  let name, icon;
+  if (phase < .035 || phase >= .965) { name = 'New moon'; icon = '🌑'; }
+  else if (phase < .215) { name = 'Waxing crescent'; icon = '🌒'; }
+  else if (phase < .285) { name = 'First quarter'; icon = '🌓'; }
+  else if (phase < .465) { name = 'Waxing gibbous'; icon = '🌔'; }
+  else if (phase < .535) { name = 'Full moon'; icon = '🌕'; }
+  else if (phase < .715) { name = 'Waning gibbous'; icon = '🌖'; }
+  else if (phase < .785) { name = 'Last quarter'; icon = '🌗'; }
+  else { name = 'Waning crescent'; icon = '🌘'; }
+  return { name, icon, illumination };
+}
+function renderAstronomy(day) {
+  const moon = moonInfo(day.time[0]);
+  $('astronomy').innerHTML = [
+    ['Sunrise', hm(day.sunrise[0])],
+    ['Sunset', hm(day.sunset[0])],
+    ['Moon phase', moon.icon + ' ' + moon.name],
+    ['Moon illumination', moon.illumination + '%'],
+    ['Daylight', daylightText(day.daylight_duration[0])]
+  ].map(([label, value]) => '<div class="astro-card"><small>' + label + '</small><b>' + value + '</b></div>').join('');
+}
+document.querySelectorAll('.unit-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    units[button.dataset.unit] = button.dataset.value;
+    document.querySelectorAll('.unit-btn[data-unit="' + button.dataset.unit + '"]').forEach(item => item.classList.toggle('active', item === button));
+    if (latestWeather) renderWeather(latestWeather);
+  });
+});
 
 function resize() {
   const d = Math.min(devicePixelRatio || 1, 2), r = cv.getBoundingClientRect();
@@ -441,7 +488,7 @@ async function load(p) {
   const geo = `latitude=${p.lat}&longitude=${p.lon}&timezone=auto`;
   try {
     const [w, a] = await Promise.all([
-      get(`https://api.open-meteo.com/v1/forecast?${geo}&forecast_days=7&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max`),
+      get(`https://api.open-meteo.com/v1/forecast?${geo}&forecast_days=7&current=temperature_2m,apparent_temperature,relative_humidity_2m,is_day,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,uv_index_max,precipitation_probability_max`),
       getAir(p, geo)
     ]);
     showWeather(p, w);
@@ -453,36 +500,42 @@ async function load(p) {
 }
 
 function showWeather(p, w) {
+  latestWeather = { p, w };
+  renderWeather(latestWeather);
+}
+
+function renderWeather(weather) {
+  const { p, w } = weather;
   const c = w.current, d = describe(c.weather_code), day = w.daily;
   liveTemp = c.temperature_2m;
   liveWind = c.wind_speed_10m;
 
   $('place').textContent = p.region ? `${p.name}, ${p.region}` : p.name;
-  $('temp').textContent = Math.round(c.temperature_2m) + '°';
+  $('temp').textContent = tempText(c.temperature_2m);
   $('cond').textContent = d.l;
-  $('sub').textContent = `Feels like ${Math.round(c.apparent_temperature)}°. High ${Math.round(day.temperature_2m_max[0])}°, low ${Math.round(day.temperature_2m_min[0])}°.`;
+  $('sub').textContent = `Feels like ${tempText(c.apparent_temperature)}. High ${tempText(day.temperature_2m_max[0])}, low ${tempText(day.temperature_2m_min[0])}.`;
   setScene(c.weather_code, !c.is_day);
 
   const i0 = Math.max(0, w.hourly.time.findIndex(x => x >= c.time.slice(0, 13) + ':00'));
   const vis = w.hourly.visibility[i0];
   const tiles = [
     ['Humidity', c.relative_humidity_2m + '%', ''],
-    ['Wind', Math.round(c.wind_speed_10m) + ' km/h', compass(c.wind_direction_10m)],
-    ['Pressure', Math.round(c.surface_pressure) + ' hPa', ''],
+    ['Wind', windValue(c.wind_speed_10m).toFixed(1).replace(/\\.0$/, '') + ' ' + units.wind, compass(c.wind_direction_10m)],
+    ['Pressure', pressureText(c.surface_pressure), ''],
     ['UV index', Math.round(day.uv_index_max[0]), 'today’s peak'],
-    ['Visibility', vis == null ? '–' : (vis / 1000).toFixed(1) + ' km', ''],
-    ['Sunrise', hm(day.sunrise[0]), 'Sunset ' + hm(day.sunset[0])]
+    ['Visibility', vis == null ? '–' : (vis / 1000).toFixed(1) + ' km', '']
   ];
   $('tiles').innerHTML = tiles.map(([k, v, s]) => `<div class="tile"><small>${k}</small><b>${v}</b><span>${s}</span></div>`).join('');
+  renderAstronomy(day);
 
   $('hours').innerHTML = Array.from({ length: 24 }, (_, n) => i0 + n).filter(i => w.hourly.time[i]).map((i, n) =>
-    `<div class="h"><small>${n ? hr(w.hourly.time[i]) : 'Now'}</small><div class="ic">${describe(w.hourly.weather_code[i]).ic}</div><b>${Math.round(w.hourly.temperature_2m[i])}°</b></div>`).join('');
+    `<div class="h"><small>${n ? hr(w.hourly.time[i]) : 'Now'}</small><div class="ic">${describe(w.hourly.weather_code[i]).ic}</div><b>${tempText(w.hourly.temperature_2m[i])}</b></div>`).join('');
 
   const lo = Math.min(...day.temperature_2m_min), hi = Math.max(...day.temperature_2m_max), span = hi - lo || 1;
   $('days').innerHTML = day.time.map((s, i) => {
     const name = i ? new Date(s + 'T00:00').toLocaleDateString('en-IN', { weekday: 'short' }) : 'Today';
     const l = day.temperature_2m_min[i], h = day.temperature_2m_max[i], rain = day.precipitation_probability_max[i];
-    return `<li><span>${name}</span><span class="c">${describe(day.weather_code[i]).l}${rain >= 20 ? ', ' + rain + '% rain' : ''}</span><span class="lo">${Math.round(l)}°</span><div class="bar"><i style="left:${(l - lo) / span * 100}%;right:${100 - (h - lo) / span * 100}%"></i></div><span>${Math.round(h)}°</span></li>`;
+    return `<li><span>${name}</span><span class="c">${describe(day.weather_code[i]).l}${rain >= 20 ? ', ' + rain + '% rain' : ''}</span><span class="lo">${tempText(l)}</span><div class="bar"><i style="left:${(l - lo) / span * 100}%;right:${100 - (h - lo) / span * 100}%"></i></div><span>${tempText(h)}</span></li>`;
   }).join('');
 }
 
