@@ -1,0 +1,82 @@
+/* Shared colour adjustments for the light theme. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --line: #dfe2e8;
+  --text: #20232a;
+  --dim: #687080;
+}
+
+:root[data-theme="light"] body { background: var(--bg); color: var(--text); }
+:root[data-theme="light"] button,
+:root[data-theme="light"] .astro-link,
+:root[data-theme="light"] .secondary-btn,
+:root[data-theme="light"] .search-row button {
+  background: #ffffff;
+  border-color: var(--line);
+  color: var(--text);
+}
+:root[data-theme="light"] button:hover,
+:root[data-theme="light"] .astro-link:hover,
+:root[data-theme="light"] .secondary-btn:hover,
+:root[data-theme="light"] .search-row button:hover { background: #edf0f5; }
+:root[data-theme="light"] input,
+:root[data-theme="light"] #q,
+:root[data-theme="light"] .search-row input,
+:root[data-theme="light"] .date-label input {
+  background: #ffffff;
+  border-color: var(--line);
+  color: var(--text);
+}
+:root[data-theme="light"] .suggestions {
+  background: #ffffff;
+  border-color: var(--line);
+  box-shadow: 0 12px 30px rgba(30, 40, 60, .14);
+}
+:root[data-theme="light"] .suggestions li:hover,
+:root[data-theme="light"] .suggestions li.active { background: #edf0f5; }
+:root[data-theme="light"] .hero { background: #e7ebf1; }
+:root[data-theme="light"] .tile,
+:root[data-theme="light"] .astro-card,
+:root[data-theme="light"] .h { background: #ffffff; }
+:root[data-theme="light"] .unit-controls,
+:root[data-theme="light"] .air { background: #ffffff; border-color: var(--line); }
+:root[data-theme="light"] .unit-btn.active {
+  background: #e5e9f0;
+  border-color: #c6ccd7;
+  color: #20232a;
+}
+:root[data-theme="light"] .bar { background: #e4e7ed; }
+:root[data-theme="light"] .days li { border-color: var(--line); }
+:root[data-theme="light"] .panel,
+:root[data-theme="light"] .event-card { background: #ffffff; border-color: var(--line); }
+:root[data-theme="light"] .moon-hero {
+  background: radial-gradient(ellipse at 78% 48%, rgba(103, 113, 151, .12), transparent 48%), linear-gradient(120deg, #ffffff, #edf0f5);
+}
+:root[data-theme="light"] .intro h1 span { color: #777f90; }
+:root[data-theme="light"] .arc-track { stroke: #d5d9e1; }
+:root[data-theme="light"] .horizon { stroke: #b9c0cc; }
+:root[data-theme="light"] .calendar-day { background: #fafbfc; border-color: var(--line); }
+:root[data-theme="light"] .calendar-day.today { background: rgba(190, 145, 65, .10); }
+:root[data-theme="light"] .astro-footer { border-color: var(--line); }
+:root[data-theme="light"] .fine-print { color: #747d8c; }
+
+.theme-toggle { white-space: nowrap; min-height: 42px; padding: 9px 13px; font-size: 13px; }
+.page-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.page-nav a {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.page-nav a:hover,
+.page-nav a[aria-current="page"] { color: var(--text); background: var(--panel); }
+
+@media (max-width: 640px) {
+  .page-nav { width: 100%; }
+  .page-nav a { flex: 1; text-align: center; }
+  .theme-toggle { width: 100%; }
+}
