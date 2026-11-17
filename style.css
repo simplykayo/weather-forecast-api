@@ -227,3 +227,8 @@ footer{color:var(--dim);font-size:12px}
   .astro-card { padding: 13px 11px; }
   .astro-card:last-child { grid-column: 1 / -1; }
 }
+
+
+/* ---------- astronomy page navigation ---------- */
+.astro-link{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;color:var(--text);text-decoration:none;font-size:13px;background:#17171b;white-space:nowrap}.astro-link:hover{background:#25252a}
+@media(max-width:640px){.astro-link{width:100%;min-height:44px}}
