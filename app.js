@@ -1,5 +1,6 @@
 (() => {
 const $ = id => document.getElementById(id);
+const locationBtn = $('locationBtn');
 const DEFAULT = { name: 'Naka Hindola, Lucknow', region: 'Uttar Pradesh, India', lat: 26.8467, lon: 80.9462 };
 const WAQI_TOKEN = '06749c1561d5f4e092b3737a048ff656d569d234';
 
@@ -612,6 +613,52 @@ sugBox.addEventListener('mousedown', e => {
 
 document.addEventListener('click', e => {
   if (!e.target.closest('#search')) sugBox.hidden = true;
+});
+
+
+/* ---------- device location ---------- */
+locationBtn.addEventListener('click', () => {
+  if (!window.isSecureContext) {
+    status('Location access requires HTTPS or localhost.');
+    return;
+  }
+  if (!navigator.geolocation) {
+    status('Your browser does not support location access. Search for a place instead.');
+    return;
+  }
+
+  locationBtn.disabled = true;
+  locationBtn.textContent = 'Finding location…';
+  status('Waiting for location permission…');
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const p = {
+        name: 'Your location',
+        region: '',
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+      };
+      qInput.value = '';
+      matches = [];
+      pickedIdx = -1;
+      sugBox.hidden = true;
+      locationBtn.disabled = false;
+      locationBtn.textContent = '◎ Select my location';
+      load(p);
+    },
+    error => {
+      const message = error.code === 1
+        ? 'Location permission was denied. Allow it in your browser settings or search for a place.'
+        : error.code === 2
+          ? 'Your location could not be determined. Try again or search for a place.'
+          : 'Location request timed out. Try again.';
+      status(message);
+      locationBtn.disabled = false;
+      locationBtn.textContent = '◎ Select my location';
+    },
+    { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }
+  );
 });
 
 $('search').addEventListener('submit', async e => {
