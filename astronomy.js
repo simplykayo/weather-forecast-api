@@ -26,13 +26,13 @@ function phaseInfo(dateString){
   return {age,phase,illumination,name,icon};
 }
 function phaseShadow(phase){
-  // A CSS shadow overlay approximates the illuminated lunar hemisphere.
-  const waxing = phase < .5;
-  const amount = Math.abs(.5-phase)*2;
-  const edge = Math.round(amount*100);
-  if(phase<.035||phase>=.965)return 'rgba(8,9,14,.97)';
-  if(phase<.5)return 'linear-gradient(90deg,rgba(8,9,14,.96) 0 '+(100-edge)+'%,transparent '+(100-edge)+'%)';
-  return 'linear-gradient(90deg,transparent '+edge+'%,rgba(8,9,14,.96) '+edge+'%)';
+  // Approximate the dark hemisphere while keeping the lit side oriented correctly.
+  const light=(1-Math.cos(phase*Math.PI*2))/2;
+  const edge=Math.round((1-light)*100);
+  if(light<.015)return 'rgba(8,9,14,.97)';
+  if(light>.985)return 'transparent';
+  if(phase<.5)return 'linear-gradient(90deg,rgba(8,9,14,.96) 0 '+edge+'%,transparent '+edge+'%)';
+  return 'linear-gradient(90deg,transparent 0 '+(100-edge)+'%,rgba(8,9,14,.96) '+(100-edge)+'%)';
 }
 function dateLabel(s){return new Date(s+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
 function fmtTime(s){if(!s)return '—';const d=new Date(s);return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
