@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astronomy — City Search Weather</title>
+<meta name="description" content="Explore the Moon, sunlight, twilight and sky conditions for your location.">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="astronomy.css">
+</head>
+<body>
+<main class="astro-main">
+  <header class="astro-header">
+    <a class="back-link" href="index.html">← Weather dashboard</a>
+    <span class="eyebrow">THE NIGHT SKY, EXPLAINED</span>
+  </header>
+
+  <section class="intro">
+    <p class="eyebrow">ASTRONOMY</p>
+    <h1>Look up.<br><span>There's a universe.</span></h1>
+    <p class="intro-copy">Explore the Moon, follow the Sun and check the sky conditions above your location.</p>
+  </section>
+
+  <section class="location-panel">
+    <form id="astro-search">
+      <label for="astro-place">Your observing location</label>
+      <div class="search-row">
+        <input id="astro-place" type="search" placeholder="Search a city or place" autocomplete="off">
+        <button type="submit">Search</button>
+      </div>
+    </form>
+    <button id="astro-location" class="secondary-btn" type="button">◎ Use my location</button>
+    <p id="astro-status" role="status">Choose a location to explore its sky.</p>
+  </section>
+
+  <section class="moon-hero panel">
+    <div class="moon-copy">
+      <p class="eyebrow">THE MOON</p>
+      <p id="moon-date" class="muted">Select a location</p>
+      <h2 id="moon-name">Waiting for your sky</h2>
+      <p id="moon-summary" class="muted">The lunar details will appear here.</p>
+      <div class="moon-stats">
+        <div><small>Illuminated</small><b id="moon-light">—</b></div>
+        <div><small>Moon age</small><b id="moon-age">—</b></div>
+        <div><small>Next major phase</small><b id="moon-next">—</b></div>
+      </div>
+    </div>
+    <div class="moon-art" aria-hidden="true"><div id="moon-disc" class="moon-disc"></div><span class="moon-orbit orbit-one"></span><span class="moon-orbit orbit-two"></span></div>
+  </section>
+
+  <section class="panel date-panel">
+    <div><p class="eyebrow">EXPLORE A DATE</p><h2>Choose your sky</h2><p class="muted">Forecast-based sunlight and cloud details are available for the next 16 days.</p></div>
+    <label class="date-label" for="astro-date">Date <input id="astro-date" type="date"></label>
+  </section>
+
+  <section>
+    <div class="section-heading"><div><p class="eyebrow">OUR STAR</p><h2>Sun & daylight</h2></div><span class="section-note">Local time</span></div>
+    <div class="sun-panel panel">
+      <div class="sun-arc-wrap">
+        <svg class="sun-arc" viewBox="0 0 600 190" role="img" aria-label="Illustration of the Sun's path between sunrise and sunset">
+          <path d="M35 160 Q300 -110 565 160" class="arc-track"/>
+          <path d="M35 160 Q300 -110 565 160" class="arc-progress" id="sun-progress"/>
+          <path d="M20 160 H580" class="horizon"/>
+          <circle id="sun-marker" cx="300" cy="25" r="11" class="sun-marker"/>
+        </svg>
+        <div class="sun-labels"><span>Sunrise <b id="sunrise">—</b></span><span>Sunset <b id="sunset">—</b></span></div>
+      </div>
+      <div class="sun-grid">
+        <div><small>Solar noon (approx.)</small><b id="solar-noon">—</b></div>
+        <div><small>Daylight duration</small><b id="daylight">—</b></div>
+        <div><small>Sunshine forecast</small><b id="sunshine">—</b></div>
+        <div><small>Peak UV index</small><b id="uv">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-heading"><div><p class="eyebrow">TONIGHT'S CONDITIONS</p><h2>Is it a good night to stargaze?</h2></div></div>
+    <div class="sky-grid">
+      <article class="panel sky-card"><span class="sky-icon">☁</span><small>Cloud cover</small><b id="cloud-cover">—</b><p id="cloud-note" class="muted">Cloud forecast for your selected date.</p></article>
+      <article class="panel sky-card"><span class="sky-icon">✦</span><small>Viewing outlook</small><b id="view-score">—</b><p id="view-note" class="muted">An estimate based on clouds and moonlight.</p></article>
+      <article class="panel sky-card"><span class="sky-icon">◌</span><small>Visibility</small><b id="visibility">—</b><p class="muted">Forecast atmospheric visibility.</p></article>
+    </div>
+    <p class="fine-print">Stargazing outlook is a simple estimate, not a professional sky-quality or light-pollution measurement. Local lights, haze and weather can change what you see.</p>
+  </section>
+
+  <section>
+    <div class="section-heading"><div><p class="eyebrow">LUNAR CALENDAR</p><h2>Moon phases this month</h2></div><span id="calendar-month" class="section-note"></span></div>
+    <div id="moon-calendar" class="calendar panel"></div>
+    <div class="phase-legend"><span>🌑 New</span><span>🌓 First quarter</span><span>🌕 Full</span><span>🌗 Last quarter</span></div>
+  </section>
+
+  <section>
+    <div class="section-heading"><div><p class="eyebrow">COMING UP</p><h2>Next lunar milestones</h2></div></div>
+    <div id="phase-events" class="events-grid"></div>
+  </section>
+
+  <section>
+    <div class="section-heading"><div><p class="eyebrow">A LITTLE COSMOS</p><h2>Know your sky</h2></div></div>
+    <div class="facts-grid">
+      <article class="panel fact-card"><span>01 / THE MOON</span><h3>One face, many phases</h3><p>The Moon doesn't make its own light. We see different portions of its sunlit half as it orbits Earth.</p></article>
+      <article class="panel fact-card"><span>02 / THE SUN</span><h3>Our nearest star</h3><p>Sunlight takes about 8 minutes and 20 seconds to travel the roughly 150 million kilometres to Earth.</p></article>
+      <article class="panel fact-card"><span>03 / DEEP SPACE</span><h3>Looking back in time</h3><p>Light from distant stars and galaxies can take years, thousands of years or much longer to reach us.</p></article>
+    </div>
+  </section>
+
+  <footer class="astro-footer">Astronomical phase values are calculated estimates. Sun times and sky forecasts are provided by Open-Meteo. Always check local conditions before observing.</footer>
+</main>
+<script src="astronomy.js?v=1"></script>
+</body>
+</html>
