@@ -34,7 +34,7 @@ This is a static site, so it does not need a build step.
 2. Create a Pages project and connect this GitHub repository.
 3. Set the production branch to main.
 4. Leave the build command empty.
-5. Set the build output directory to the repository root (/).
+5. Set the build output directory to . (the repository root).
 6. Deploy.
 
 When the connected branch is updated, Cloudflare Pages can publish the static files automatically. The site does not require a server-side runtime.
