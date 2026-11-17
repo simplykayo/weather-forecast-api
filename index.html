@@ -36,7 +36,24 @@
     </div>
   </section>
 
+  <section class="unit-controls" aria-label="Measurement units">
+    <div class="unit-group"><span>Temperature</span><button type="button" class="unit-btn active" data-unit="temp" data-value="C">°C</button><button type="button" class="unit-btn" data-unit="temp" data-value="F">°F</button></div>
+    <div class="unit-group"><span>Wind</span><button type="button" class="unit-btn active" data-unit="wind" data-value="kmh">km/h</button><button type="button" class="unit-btn" data-unit="wind" data-value="mph">mph</button></div>
+    <div class="unit-group"><span>Pressure</span><button type="button" class="unit-btn active" data-unit="pressure" data-value="hPa">hPa</button><button type="button" class="unit-btn" data-unit="pressure" data-value="inHg">inHg</button></div>
+  </section>
+
   <section class="tiles" id="tiles" aria-label="Conditions"></section>
+
+  <section aria-labelledby="h-astro">
+    <h2 id="h-astro">Astronomy</h2>
+    <div class="astronomy" id="astronomy">
+      <div class="astro-card"><small>Sunrise</small><b>—</b></div>
+      <div class="astro-card"><small>Sunset</small><b>—</b></div>
+      <div class="astro-card"><small>Moon phase</small><b>—</b></div>
+      <div class="astro-card"><small>Moon illumination</small><b>—</b></div>
+      <div class="astro-card"><small>Daylight</small><b>—</b></div>
+    </div>
+  </section>
 
   <section aria-labelledby="h-air">
     <h2 id="h-air">Air quality</h2>
@@ -55,6 +72,6 @@
 
   <footer>Weather from Open-Meteo. Air quality uses WAQI with Open-Meteo fallback and the US AQI scale.</footer>
 </main>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
