@@ -1,7 +1,7 @@
 (() => {
 const $ = id => document.getElementById(id);
 const locationBtn = $('locationBtn');
-const WAQI_TOKEN = '06749c1561d5f4e092b3737a048ff656d569d234';
+const WAQI_TOKEN = ''; // Keep public builds key-free; use a server-side proxy for WAQI.
 
 /* ---------- weather codes ---------- */
 function describe(c) {
