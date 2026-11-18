@@ -193,33 +193,74 @@
     }).join('');
   }
 
+  function plainTextFromHtml(markup) {
+    const template = document.createElement('template');
+    template.innerHTML = String(markup || '');
+    template.content.querySelectorAll('script,style').forEach((node) => node.remove());
+    return (template.content.textContent || '').replace(/\\s+/g, ' ').trim();
+  }
+
+  function extractApodImage(item, contentHtml) {
+    const candidates = [
+      item?.image_url, item?.image, item?.hdurl, item?.url,
+      item?._embedded?.['wp:featuredmedia']?.[0]?.source_url
+    ].filter((value) => typeof value === 'string' && /^https:\\/\\//i.test(value));
+
+    const doc = new DOMParser().parseFromString(String(contentHtml || ''), 'text/html');
+    const contentImage = doc.querySelector('img[src]');
+    if (contentImage?.src) candidates.push(contentImage.src);
+    const linkedImage = [...doc.querySelectorAll('a[href]')]
+      .map((anchor) => anchor.href)
+      .find((href) => /^https:\\/\\//i.test(href) && /\\.(jpe?g|png|webp)(\\?|$)/i.test(href));
+    if (linkedImage) candidates.push(linkedImage);
+
+    return candidates.find((url) => /\\.(jpe?g|png|webp)(\\?|$)/i.test(url)) || candidates[0] || '';
+  }
+
   async function loadApod() {
     const media = $('apod-media');
+    const titleNode = $('apod-title');
+    const descriptionNode = $('apod-description');
     try {
-      const response = await fetch('https://science.nasa.gov/wp-json/wp/v2/apod-basic/');
-      if (!response.ok) throw new Error('NASA image service unavailable');
+      const response = await fetch('https://science.nasa.gov/wp-json/wp/v2/apod-basic/?per_page=1&_embed=1');
+      if (!response.ok) throw new Error('NASA image service returned ' + response.status);
       const payload = await response.json();
       const item = Array.isArray(payload) ? payload[0] : payload;
-      if (!item) throw new Error('No feature returned');
-      setText('apod-date', item.date || 'NASA FEATURE');
-      setText('apod-title', item.title || 'Astronomy picture of the day');
-      setText('apod-description', item.explanation || item.description || 'Explore the featured astronomy image on NASA.');
-      setText('apod-credit', item.copyright ? 'Image: ' + item.copyright : (item.credit || 'NASA'));
-      const link = item.permalink || item.url || 'https://science.nasa.gov/solar-system/';
-      $('apod-link').href = link;
-      const imageUrl = item.hdurl || item.image_url || (item.media_type === 'image' ? item.url : '');
-      if (imageUrl && /^https:\/\//.test(imageUrl)) {
+      if (!item) throw new Error('NASA did not return an astronomy feature');
+
+      // NASA's WordPress feed uses rendered title/content fields; keep support
+      // for the simpler APOD-style fields as well.
+      const title = item.title?.rendered || item.title || 'Astronomy picture of the day';
+      const contentHtml = item.content?.rendered || item.explanation || item.description || '';
+      const description = plainTextFromHtml(contentHtml) || 'Explore today’s astronomy feature on NASA.';
+      const dateValue = item.date || item.date_gmt || item.apod_date || '';
+      const imageUrl = extractApodImage(item, contentHtml);
+      const pageUrl = item.link || item.permalink || item.guid?.rendered || 'https://science.nasa.gov/';
+
+      setText('apod-date', dateValue ? new Date(dateValue).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) : 'NASA FEATURE');
+      setText('apod-title', plainTextFromHtml(title));
+      setText('apod-description', description);
+      setText('apod-credit', item.credit || item.copyright ? 'Image: ' + (item.credit || item.copyright) : 'Image and explanation: NASA / credited contributor');
+      $('apod-link').href = pageUrl;
+
+      if (imageUrl && /^https:\\/\\//i.test(imageUrl)) {
         const image = document.createElement('img');
         image.src = imageUrl;
-        image.alt = item.alt || item.title || 'NASA astronomy picture of the day';
+        image.alt = plainTextFromHtml(title) || 'NASA astronomy picture of the day';
         image.loading = 'lazy';
+        image.referrerPolicy = 'no-referrer';
+        image.addEventListener('error', () => {
+          media.textContent = 'NASA’s image could not be loaded right now. Open the feature on NASA’s website to view it.';
+        }, { once: true });
         media.replaceChildren(image);
       } else {
-        media.textContent = item.media_type === 'video' ? 'Today’s feature is a video. Open NASA’s feature to watch it.' : 'Open NASA’s feature to view today’s astronomy image.';
+        media.textContent = 'NASA’s feature loaded, but it did not include a direct image. Open the feature on NASA’s website to view its media.';
       }
     } catch (error) {
       media.textContent = 'NASA’s daily feature is temporarily unavailable.';
-      setText('apod-description', 'The rest of the astronomy tools are still available. Try again later for NASA’s daily feature.');
+      setText('apod-title', 'Astronomy picture of the day');
+      setText('apod-description', 'NASA’s feed could not be read just now. The rest of the astronomy tools are still available.');
+      setText('apod-credit', '');
     }
   }
 
