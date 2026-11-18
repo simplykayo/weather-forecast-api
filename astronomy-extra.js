@@ -219,8 +219,6 @@
 
   async function loadApod() {
     const media = $('apod-media');
-    const titleNode = $('apod-title');
-    const descriptionNode = $('apod-description');
     try {
       const response = await fetch('https://science.nasa.gov/wp-json/wp/v2/apod-basic/?per_page=1&_embed=1');
       if (!response.ok) throw new Error('NASA image service returned ' + response.status);
@@ -243,7 +241,7 @@
       setText('apod-credit', item.credit || item.copyright ? 'Image: ' + (item.credit || item.copyright) : 'Image and explanation: NASA / credited contributor');
       $('apod-link').href = pageUrl;
 
-      if (imageUrl && /^https:\\/\\//i.test(imageUrl)) {
+      if (imageUrl && imageUrl.startsWith('https://')) {
         const image = document.createElement('img');
         image.src = imageUrl;
         image.alt = plainTextFromHtml(title) || 'NASA astronomy picture of the day';
