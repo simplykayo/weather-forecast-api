@@ -123,7 +123,7 @@ function updateDate(){
   if(i<0){safeText('sunrise','—');safeText('sunset','—');safeText('solar-noon','—');safeText('daylight','—');safeText('sunshine','—');safeText('uv','—');safeText('astro-status','That date is outside the available forecast.');return;}
   renderSun({sunrise:forecast.daily.sunrise[i],sunset:forecast.daily.sunset[i],daylight_duration:forecast.daily.daylight_duration[i],sunshine_duration:forecast.daily.sunshine_duration[i],uv_index_max:forecast.daily.uv_index_max[i]});
   renderSky();
-  window.dispatchEvent(new CustomEvent('astro:date',{detail:{date:selectedDate}}));
+  window.dispatchEvent(new CustomEvent('astro:date',{detail:{date:selectedDate,sunrise:forecast.daily.sunrise[i],sunset:forecast.daily.sunset[i]}}));
 }
 async function searchPlace(q){
   const data=await getJSON('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=1&language=en&format=json');
