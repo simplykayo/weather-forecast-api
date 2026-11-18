@@ -3,11 +3,9 @@ const $ = id => document.getElementById(id);
 const DAY = 86400000;
 const EPOCH = Date.UTC(2000,0,6,18,14);
 const SYNODIC = 29.530588853;
-let place = null, forecast = null, selectedDate = new Date().toISOString().slice(0,10);
+let place = null, forecast = null, selectedDate = localDate(new Date());
 const dateInput = $('astro-date');
 dateInput.value = selectedDate;
-dateInput.min = selectedDate;
-dateInput.max = new Date(Date.now()+15*DAY).toISOString().slice(0,10);
 
 function phaseInfo(dateString){
   const date = new Date(dateString+'T12:00:00Z');
@@ -120,9 +118,18 @@ function updateDate(){
   selectedDate=dateInput.value;
   renderMoon();
   const i=forecast.daily.time.indexOf(selectedDate);
-  if(i<0){safeText('sunrise','—');safeText('sunset','—');safeText('solar-noon','—');safeText('daylight','—');safeText('sunshine','—');safeText('uv','—');safeText('astro-status','That date is outside the available forecast.');return;}
+  if(i<0){
+    ['sunrise','sunset','solar-noon','daylight','sunshine','uv','cloud-cover','view-score','visibility'].forEach(id=>safeText(id,'—'));
+    safeText('cloud-note','A weather forecast is not available for this date.');
+    safeText('view-note','The Moon and calculated Sun positions still work for dates outside the weather forecast.');
+    const last=forecast.daily.time[forecast.daily.time.length-1];
+    safeText('astro-status','Astronomy for '+dateLabel(selectedDate)+' · Weather forecast available through '+dateLabel(last)+'.');
+    window.dispatchEvent(new CustomEvent('astro:date',{detail:{date:selectedDate}}));
+    return;
+  }
   renderSun({sunrise:forecast.daily.sunrise[i],sunset:forecast.daily.sunset[i],daylight_duration:forecast.daily.daylight_duration[i],sunshine_duration:forecast.daily.sunshine_duration[i],uv_index_max:forecast.daily.uv_index_max[i]});
   renderSky();
+  safeText('astro-status',(place.name+(place.admin1?', '+place.admin1:'')+(place.country?', '+place.country:''))+' · '+forecast.timezone+' · Forecast date');
   window.dispatchEvent(new CustomEvent('astro:date',{detail:{date:selectedDate,sunrise:forecast.daily.sunrise[i],sunset:forecast.daily.sunset[i]}}));
 }
 async function searchPlace(q){
