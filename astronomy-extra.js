@@ -141,6 +141,7 @@
   }
 
   function updateLocation(detail) {
+    if (!astronomy) { setText('sun-live-status', 'Astronomy calculations could not load'); return; }
     location = detail;
     timezone = detail.timezone || undefined;
     observer = new astronomy.Observer(Number(detail.lat), Number(detail.lon), 0);
@@ -159,6 +160,11 @@
     if (location) {
       renderTwilight();
       renderMoonPosition();
+      if (selectedDay === new Date().toISOString().slice(0, 10)) renderSunPosition(new Date());
+      else {
+        $('sun-time').value = '720';
+        updateSolarSlider();
+      }
     }
   });
   $('sun-time').addEventListener('input', updateSolarSlider);
@@ -218,7 +224,11 @@
   }
 
   function initIssMap() {
-    if (!window.L || !$('iss-map')) return;
+    if (!$('iss-map')) return;
+    if (!window.L) {
+      $('iss-map').textContent = 'The map library could not load. ISS readings will be unavailable.';
+      return;
+    }
     issMap = L.map('iss-map', { worldCopyJump: true, scrollWheelZoom: false }).setView([15, 0], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 7,
