@@ -197,24 +197,24 @@
     const template = document.createElement('template');
     template.innerHTML = String(markup || '');
     template.content.querySelectorAll('script,style').forEach((node) => node.remove());
-    return (template.content.textContent || '').replace(/\\s+/g, ' ').trim();
+    return (template.content.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
   function extractApodImage(item, contentHtml) {
     const candidates = [
       item?.image_url, item?.image, item?.hdurl, item?.url,
       item?._embedded?.['wp:featuredmedia']?.[0]?.source_url
-    ].filter((value) => typeof value === 'string' && /^https:\\/\\//i.test(value));
+    ].filter((value) => typeof value === 'string' && /^https:\/\//i.test(value));
 
     const doc = new DOMParser().parseFromString(String(contentHtml || ''), 'text/html');
     const contentImage = doc.querySelector('img[src]');
     if (contentImage?.src) candidates.push(contentImage.src);
     const linkedImage = [...doc.querySelectorAll('a[href]')]
       .map((anchor) => anchor.href)
-      .find((href) => /^https:\\/\\//i.test(href) && /\\.(jpe?g|png|webp)(\\?|$)/i.test(href));
+      .find((href) => /^https:\/\//i.test(href) && /\.(jpe?g|png|webp)(\?|$)/i.test(href));
     if (linkedImage) candidates.push(linkedImage);
 
-    return candidates.find((url) => /\\.(jpe?g|png|webp)(\\?|$)/i.test(url)) || candidates[0] || '';
+    return candidates.find((url) => /\.(jpe?g|png|webp)(\?|$)/i.test(url)) || candidates[0] || '';
   }
 
   async function loadApod() {
