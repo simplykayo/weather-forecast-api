@@ -110,6 +110,7 @@ async function load(p){
   try{
     const q='latitude='+encodeURIComponent(p.lat)+'&longitude='+encodeURIComponent(p.lon)+'&timezone=auto&forecast_days=16&daily=sunrise,sunset,daylight_duration,sunshine_duration,uv_index_max&hourly=cloud_cover,visibility';
     forecast=await getJSON('https://api.open-meteo.com/v1/forecast?'+q);
+    window.dispatchEvent(new CustomEvent('astro:location',{detail:{...p,timezone:forecast.timezone}}));
     safeText('astro-status',(p.name+(p.admin1?', '+p.admin1:'')+(p.country?', '+p.country:''))+' · '+forecast.timezone);
     updateDate();
   }catch(e){safeText('astro-status','Could not load sky data. Check your connection and try again.');}
@@ -122,6 +123,7 @@ function updateDate(){
   if(i<0){safeText('sunrise','—');safeText('sunset','—');safeText('solar-noon','—');safeText('daylight','—');safeText('sunshine','—');safeText('uv','—');safeText('astro-status','That date is outside the available forecast.');return;}
   renderSun({sunrise:forecast.daily.sunrise[i],sunset:forecast.daily.sunset[i],daylight_duration:forecast.daily.daylight_duration[i],sunshine_duration:forecast.daily.sunshine_duration[i],uv_index_max:forecast.daily.uv_index_max[i]});
   renderSky();
+  window.dispatchEvent(new CustomEvent('astro:date',{detail:{date:selectedDate}}));
 }
 async function searchPlace(q){
   const data=await getJSON('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=1&language=en&format=json');
