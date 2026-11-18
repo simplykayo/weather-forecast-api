@@ -33,8 +33,7 @@
   }
 
   function localDateStart(dateString) {
-    const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    return parsePlaceTime(dateString + 'T00:00') || new Date(dateString + 'T00:00:00Z');
   }
 
   function position(body, date) {
