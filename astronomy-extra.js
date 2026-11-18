@@ -64,7 +64,12 @@
   }
 
   function renderTwilight() {
-    if (!astronomy || !observer || !sunRise || !sunSet) return;
+    if (!astronomy || !observer) return;
+    if (!sunRise || !sunSet) {
+      ['civil-dawn','nautical-dawn','astro-dawn','solar-transit','civil-dusk','nautical-dusk','astro-dusk']
+        .forEach((id) => setText(id, 'No crossing'));
+      return;
+    }
     const dawnStart = new Date(sunRise.getTime() - 3 * 60 * 60 * 1000);
     const duskStart = sunSet;
     const getEvent = (direction, altitude, start) => {
@@ -167,6 +172,17 @@
           const setting = astronomy.SearchRiseSet(astronomy.Body.Sun, observer, -1, start, 1, 0);
           sunRise = rise ? rise.date : null;
           sunSet = setting ? setting.date : null;
+          if (sunRise && sunSet) {
+            setText('sunrise', formatTime(sunRise, timezone));
+            setText('sunset', formatTime(sunSet, timezone));
+            setText('solar-noon', formatTime(new Date((sunRise.getTime() + sunSet.getTime()) / 2), timezone));
+            const minutes = Math.max(0, Math.round((sunSet - sunRise) / 60000));
+            setText('daylight', Math.floor(minutes / 60) + 'h ' + (minutes % 60) + 'm');
+          } else {
+            ['sunrise','sunset','solar-noon','daylight'].forEach((id) => setText(id, 'No crossing'));
+          }
+          setText('sunshine', 'Forecast unavailable');
+          setText('uv', 'Forecast unavailable');
         } catch (error) {
           sunRise = null;
           sunSet = null;
