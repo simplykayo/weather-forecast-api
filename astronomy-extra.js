@@ -157,10 +157,25 @@
     selectedDay = event.detail.date;
     sunRise = parsePlaceTime(event.detail.sunrise);
     sunSet = parsePlaceTime(event.detail.sunset);
-    if (location) {
+    if (location && astronomy) {
+      // Astronomy calculations are not limited by the short weather forecast.
+      // Calculate rise/set directly when Open-Meteo has no forecast for this date.
+      if (!sunRise || !sunSet) {
+        try {
+          const start = localDateStart(selectedDay);
+          const rise = astronomy.SearchRiseSet(astronomy.Body.Sun, observer, 1, start, 1, 0);
+          const setting = astronomy.SearchRiseSet(astronomy.Body.Sun, observer, -1, start, 1, 0);
+          sunRise = rise ? rise.date : null;
+          sunSet = setting ? setting.date : null;
+        } catch (error) {
+          sunRise = null;
+          sunSet = null;
+        }
+      }
       renderTwilight();
       renderMoonPosition();
-      if (selectedDay === new Date().toISOString().slice(0, 10)) renderSunPosition(new Date());
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: timezone || undefined, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      if (selectedDay === today) renderSunPosition(new Date());
       else {
         $('sun-time').value = '720';
         updateSolarSlider();
