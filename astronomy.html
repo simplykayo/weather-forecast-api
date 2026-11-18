@@ -4,11 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Astronomy — City Search Weather</title>
-<meta name="description" content="Explore the Moon, sunlight, twilight and sky conditions for your location.">
+<meta name="description" content="A complete sky guide with solar tracking, lunar phases, planets, meteor showers, the ISS and NASA astronomy imagery.">
 <meta name="theme-color" content="#0b0b0c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <link rel="stylesheet" href="astronomy.css">
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js" defer></script>
@@ -28,7 +29,7 @@
   <section class="intro">
     <p class="eyebrow">ASTRONOMY</p>
     <h1>Look up.<br><span>There's a universe.</span></h1>
-    <p class="intro-copy">Explore the Moon, follow the Sun and check the sky conditions above your location.</p>
+    <p class="intro-copy">Track the Sun and Moon, explore the planets, follow the International Space Station and plan a night under the stars.</p>
   </section>
 
   <section class="location-panel">
@@ -84,6 +85,45 @@
     </div>
   </section>
 
+
+  <section id="solar-tracker">
+    <div class="section-heading"><div><p class="eyebrow">LIVE SOLAR POSITION</p><h2>Sun tracker</h2></div><span class="section-note" id="sun-live-status">Choose a location</span></div>
+    <div class="panel tracker-panel">
+      <div class="tracker-top">
+        <div><span class="tracker-kicker">CURRENT POSITION</span><strong id="sun-altitude">—</strong><small id="sun-direction">Altitude above horizon</small></div>
+        <div class="tracker-readings"><div><small>Azimuth</small><b id="sun-azimuth">—</b></div><div><small>Direction</small><b id="sun-compass">—</b></div><div><small>Sun status</small><b id="sun-state">—</b></div></div>
+      </div>
+      <label class="time-control" for="sun-time"><span>Explore the Sun's path</span><b id="sun-time-label">Now</b><input id="sun-time" type="range" min="0" max="1435" step="5" value="720"></label>
+      <div class="twilight-grid">
+        <div><small>Civil dawn</small><b id="civil-dawn">—</b></div><div><small>Nautical dawn</small><b id="nautical-dawn">—</b></div><div><small>Astronomical dawn</small><b id="astro-dawn">—</b></div>
+        <div><small>Solar noon</small><b id="solar-transit">—</b></div><div><small>Civil dusk</small><b id="civil-dusk">—</b></div><div><small>Nautical dusk</small><b id="nautical-dusk">—</b></div><div><small>Astronomical dusk</small><b id="astro-dusk">—</b></div>
+      </div>
+      <p class="fine-print">Solar altitude is the Sun's angle above or below your local horizon. Negative values mean it is below the horizon. Times are approximate.</p>
+    </div>
+  </section>
+  <section id="planets">
+    <div class="section-heading"><div><p class="eyebrow">THE SOLAR SYSTEM</p><h2>Planets in your sky</h2></div><span class="section-note">Calculated for your location</span></div>
+    <div id="planet-grid" class="planet-grid"><p class="panel loading-card">Choose a location to calculate planet positions.</p></div>
+    <p class="fine-print">Altitude and azimuth are calculated positions, not a guarantee that an object will be visible. Daylight, clouds, buildings and local light pollution affect viewing.</p>
+  </section>
+  <section id="moon-times">
+    <div class="section-heading"><div><p class="eyebrow">LUNAR DETAILS</p><h2>Moonrise & moonset</h2></div></div>
+    <div class="panel moon-times-grid"><div><span>🌙</span><small>Moonrise</small><b id="moonrise-time">—</b></div><div><span>☾</span><small>Moonset</small><b id="moonset-time">—</b></div><div><span>◐</span><small>Moon altitude now</small><b id="moon-altitude">—</b></div><div><span>✦</span><small>Moon direction</small><b id="moon-azimuth">—</b></div></div>
+  </section>
+  <section id="meteor-showers">
+    <div class="section-heading"><div><p class="eyebrow">METEOR CALENDAR</p><h2>Upcoming meteor showers</h2></div><span class="section-note">Annual peak dates · approximate</span></div>
+    <div id="meteor-grid" class="meteor-grid"></div>
+    <p class="fine-print">Peak dates are approximate and can shift slightly each year. Actual meteor counts depend on moonlight, weather, radiant altitude and observing conditions.</p>
+  </section>
+  <section id="iss-tracker">
+    <div class="section-heading"><div><p class="eyebrow">HUMANS IN ORBIT</p><h2>International Space Station</h2></div><span class="live-indicator"><i></i> Position updates</span></div>
+    <div class="panel iss-panel"><div id="iss-map" aria-label="Map showing the current position of the International Space Station"></div><div class="iss-readings"><div><small>Latitude</small><b id="iss-lat">—</b></div><div><small>Longitude</small><b id="iss-lon">—</b></div><div><small>Altitude</small><b id="iss-alt">—</b></div><div><small>Orbital speed</small><b id="iss-speed">—</b></div><div><small>Visibility</small><b id="iss-visibility">—</b></div><div><small>Last updated</small><b id="iss-updated">—</b></div></div></div>
+    <p class="fine-print">ISS position is supplied by Where the ISS at? and refreshed periodically. The map shows the station's current subpoint on Earth, not its exact ground footprint.</p>
+  </section>
+  <section id="apod">
+    <div class="section-heading"><div><p class="eyebrow">NASA · DAILY FEATURE</p><h2>Astronomy picture of the day</h2></div><a class="section-note apod-link" id="apod-link" href="https://science.nasa.gov/solar-system/" target="_blank" rel="noopener">Explore NASA science ↗</a></div>
+    <article class="panel apod-card"><div class="apod-media" id="apod-media"><span>Loading today's image…</span></div><div class="apod-copy"><p class="eyebrow" id="apod-date">NASA FEATURE</p><h3 id="apod-title">The universe, today</h3><p id="apod-description" class="muted">NASA's astronomy feature will appear here.</p><small id="apod-credit" class="section-note"></small></div></article>
+  </section>
   <section>
     <div class="section-heading"><div><p class="eyebrow">TONIGHT'S CONDITIONS</p><h2>Is it a good night to stargaze?</h2></div></div>
     <div class="sky-grid">
@@ -114,8 +154,11 @@
     </div>
   </section>
 
-  <footer class="astro-footer">Astronomical phase values are calculated estimates. Sun times and sky forecasts are provided by Open-Meteo. Always check local conditions before observing.</footer>
+  <footer class="astro-footer">Solar-system positions are calculated in your browser with Astronomy Engine. Weather and daylight forecasts are provided by Open-Meteo; ISS tracking by Where the ISS at?; the daily image by NASA; and the ISS map by Leaflet and OpenStreetMap. Meteor-shower peak dates are approximate.</footer>
 </main>
-<script src="astronomy.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="astronomy.js?v=2"></script>
+<script src="astronomy-extra.js?v=1"></script>
 </body>
 </html>
