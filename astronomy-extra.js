@@ -17,6 +17,21 @@
   let issMarker = null;
   let issTimer = null;
 
+  function parsePlaceTime(value) {
+    if (!value) return null;
+    const [datePart, timePart] = value.split('T');
+    const [hour, minute] = timePart.split(':').map(Number);
+    const base = new Date(datePart + 'T' + String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0') + ':00Z');
+    if (!timezone) return base;
+    const parts = new Intl.DateTimeFormat('en-GB', { timeZone: timezone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(base);
+    const actual = Number(parts.find((part) => part.type === 'hour')?.value || 0) * 60 + Number(parts.find((part) => part.type === 'minute')?.value || 0);
+    const desired = hour * 60 + minute;
+    let difference = desired - actual;
+    if (difference > 720) difference -= 1440;
+    if (difference < -720) difference += 1440;
+    return new Date(base.getTime() + difference * 60000);
+  }
+
   function localDateStart(dateString) {
     const [year, month, day] = dateString.split('-').map(Number);
     return new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
@@ -118,7 +133,12 @@
     const minutes = Number($('sun-time').value);
     const [year, month, day] = selectedDay.split('-').map(Number);
     const date = new Date(Date.UTC(year, month - 1, day, 0, minutes, 0));
-    renderSunPosition(date);
+    const parts = new Intl.DateTimeFormat('en-GB', { timeZone: timezone || undefined, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(date);
+    const actual = Number(parts.find((part) => part.type === 'hour')?.value || 0) * 60 + Number(parts.find((part) => part.type === 'minute')?.value || 0);
+    let difference = minutes - actual;
+    if (difference > 720) difference -= 1440;
+    if (difference < -720) difference += 1440;
+    renderSunPosition(new Date(date.getTime() + difference * 60000));
   }
 
   function updateLocation(detail) {
@@ -135,6 +155,8 @@
   window.addEventListener('astro:location', (event) => updateLocation(event.detail));
   window.addEventListener('astro:date', (event) => {
     selectedDay = event.detail.date;
+    sunRise = parsePlaceTime(event.detail.sunrise);
+    sunSet = parsePlaceTime(event.detail.sunset);
     if (location) {
       renderTwilight();
       renderMoonPosition();
